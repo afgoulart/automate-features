@@ -39,7 +39,7 @@ jobs:
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
@@ -89,8 +89,8 @@ jobs:
             CURRENT_VERSION=$(node -p "require('./package.json').version")
             echo "Current version: $CURRENT_VERSION"
             
-            # Bump version
-            npm version ${{ github.event.inputs.version }} --no-git-tag-version
+            # Bump version using pnpm
+            pnpm version ${{ github.event.inputs.version }} --no-git-tag-version
             VERSION=$(node -p "require('./package.json').version")
             echo "version=$VERSION" >> $GITHUB_OUTPUT
             echo "Bumped version to: $VERSION"
@@ -102,7 +102,7 @@ jobs:
           EXPECTED_VERSION="${{ steps.version.outputs.version }}"
           if [ "$PACKAGE_VERSION" != "$EXPECTED_VERSION" ]; then
             echo "⚠️  Updating package.json version to match: $EXPECTED_VERSION"
-            npm version $EXPECTED_VERSION --no-git-tag-version --allow-same-version
+            pnpm version $EXPECTED_VERSION --no-git-tag-version --allow-same-version
           else
             echo "✅ Version already matches: $PACKAGE_VERSION"
           fi
@@ -113,7 +113,7 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           PACKAGE_NAME="@arranjae/automate-features"
           
-          if npm view "$PACKAGE_NAME@$VERSION" version > /dev/null 2>&1; then
+          if pnpm view "$PACKAGE_NAME@$VERSION" version > /dev/null 2>&1; then
             echo "❌ Version $VERSION already exists on NPM"
             echo "exists=true" >> $GITHUB_OUTPUT
             exit 1
@@ -127,7 +127,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          npm publish --access public
+          pnpm publish --access public --no-git-checks
           echo "✅ Published version ${{ steps.version.outputs.version }} to NPM"
 
       - name: Create Git tag (if not release)
