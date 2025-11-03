@@ -96,6 +96,15 @@ O pacote inclui:
 
 Veja [docs/BUNDLE.md](./docs/BUNDLE.md) para detalhes completos sobre a estrutura do bundle.
 
+## CI/CD
+
+O projeto usa GitHub Actions para CI/CD:
+
+- ✅ **CI**: Executa testes e lint em cada PR
+- 📦 **Publish**: Publica automaticamente no NPM quando há uma nova release
+
+Veja [docs/PUBLISHING.md](./docs/PUBLISHING.md) para detalhes sobre publicação.
+
 ## Contribuindo
 
 Contribuições são bem-vindas! Por favor, leia [CONTRIBUTING.md](./docs/CONTRIBUTING.md) para detalhes.

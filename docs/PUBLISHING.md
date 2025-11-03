@@ -75,43 +75,46 @@ npm publish --access public
 
 ### Publicação Automática com CI/CD
 
-Adicione um workflow GitHub Actions (`.github/workflows/publish.yml`):
+O projeto já inclui uma GitHub Action configurada em `.github/workflows/publish.yml` que publica automaticamente no NPM de duas formas:
 
-```yaml
-name: Publish to NPM
+#### Opção 1: Via GitHub Release
 
-on:
-  release:
-    types: [created]
+1. Crie uma nova release no GitHub
+2. A action detecta automaticamente e publica a versão do tag no NPM
 
-jobs:
-  publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          registry-url: 'https://registry.npmjs.org'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Build
-        run: npm run build
-      
-      - name: Publish to NPM
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+```bash
+# Criar tag e release
+git tag -a v1.0.0 -m "Release v1.0.0"
+git push origin v1.0.0
+
+# Depois criar release no GitHub (via interface ou CLI)
+gh release create v1.0.0 --title "v1.0.0" --notes "Release notes"
 ```
 
-Configure `NPM_TOKEN` no GitHub Secrets:
+#### Opção 2: Via Workflow Dispatch (Manual)
+
+1. Vá em **Actions** → **Publish to NPM**
+2. Clique em **Run workflow**
+3. Escolha a versão (patch, minor, major, ou custom)
+4. Execute
+
+A action irá:
+- Executar testes e lint
+- Fazer build do pacote
+- Verificar se a versão já existe no NPM
+- Publicar automaticamente
+- Criar tag e release no GitHub (se workflow_dispatch)
+
+#### Configuração do NPM_TOKEN
+
+Configure o secret `NPM_TOKEN` no GitHub:
+
 1. Acesse [npmjs.com/tokens](https://www.npmjs.com/settings/seu-usuario/tokens)
-2. Crie um "Automation" token
-3. Adicione como secret no GitHub
+2. Crie um **Automation** token (não use um token legado)
+3. No GitHub: **Settings** → **Secrets and variables** → **Actions**
+4. Adicione novo secret: `NPM_TOKEN` com o valor do token
+
+**Importante**: O token precisa ter permissão de publicação na organização `@arranjae`.
 
 ## Checklist Antes de Publicar
 
