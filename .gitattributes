@@ -1,0 +1,10 @@
+# Garantir que arquivos sensíveis não sejam commitados mesmo se adicionados acidentalmente
+.env filter=git-crypt diff=git-crypt
+.env.local filter=git-crypt diff=git-crypt
+*.key filter=git-crypt diff=git-crypt
+*secret* filter=git-crypt diff=git-crypt
+*credential* filter=git-crypt diff=git-crypt
+
+# Normalizar line endings
+* text=auto eol=lf
+

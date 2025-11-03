@@ -1,0 +1,73 @@
+# Source files (mantemos src/ mas ignoramos apenas fora de dist)
+*.ts
+!src/**/*.ts
+!dist/**/*.ts
+!dist/**/*.d.ts
+
+# Build artifacts (only include dist/)
+lib/
+*.tsbuildinfo
+
+# Development files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Tests
+tests/
+**/*.test.ts
+**/*.spec.ts
+coverage/
+.nyc_output/
+jest.config.js
+
+# Examples
+examples/
+
+# Documentation (keep README, exclude others)
+docs/
+PROJECT.md
+
+# Config files
+.eslintrc.json
+.prettierrc
+tsconfig.json
+rollup.config.js
+
+# Environment
+.env
+.env.local
+.env.*.local
+.env.example
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Misc
+*.map
+!dist/**/*.map
+

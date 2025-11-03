@@ -1,0 +1,111 @@
+{
+  "name": "@arranjae/automate-features",
+  "version": "0.1.0",
+  "description": "Development automation module with AI code generation, automated code review (SOLID, Atomic Design, Lint), and CI/CD pipeline integration",
+  "main": "./dist/index.js",
+  "module": "./dist/index.esm.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "source": "./src/index.ts"
+    },
+    "./source": {
+      "default": "./src/index.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src",
+    "config",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "npm run clean && npm run build:types && npm run build:bundle && npm run copy:source",
+    "build:types": "tsc",
+    "copy:source": "node scripts/copy-source-files.js",
+    "build:bundle": "rollup -c",
+    "build:watch": "tsc --watch",
+    "clean": "rm -rf dist lib",
+    "dev": "npm run build:watch",
+    "example": "node examples/basic-usage.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "check:solid": "node scripts/check-solid.js",
+    "check:atomic": "node scripts/check-atomic.js",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run build && npm run lint && npm run test",
+    "prepare": "npm run build",
+    "version": "npm run build",
+    "postversion": "git push && git push --tags",
+    "publish:dry-run": "npm run build && npm pack --dry-run",
+    "publish:check": "npm run build && npm pack"
+  },
+  "keywords": [
+    "automation",
+    "code-generation",
+    "code-review",
+    "ci-cd",
+    "pipeline",
+    "solid",
+    "atomic-design",
+    "cursor-api",
+    "github-actions",
+    "lint",
+    "ai",
+    "development-automation",
+    "typescript",
+    "javascript"
+  ],
+  "author": {
+    "name": "Arranjaê",
+    "email": ""
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.0",
+    "@rollup/plugin-typescript": "^11.1.0",
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "jest": "^29.7.0",
+    "prettier": "^3.1.0",
+    "rollup": "^4.6.0",
+    "ts-jest": "^29.1.1",
+    "tslib": "^2.8.1",
+    "typescript": "^5.3.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": {
+    "url": ""
+  },
+  "homepage": ""
+}

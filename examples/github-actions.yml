@@ -1,0 +1,93 @@
+name: Generate Code with Optimized Process
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: 'Descrição da feature a ser gerada'
+        required: true
+        type: string
+      create_branch:
+        description: 'Criar branch automaticamente?'
+        required: false
+        default: 'true'
+        type: boolean
+      create_pr:
+        description: 'Criar Pull Request automaticamente?'
+        required: false
+        default: 'true'
+        type: boolean
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install @arranjae/automate-features
+        run: npm install @arranjae/automate-features
+
+      - name: Generate code
+        env:
+          CURSOR_API_TOKEN: ${{ secrets.CURSOR_API_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node -e "
+          const { Pipeline } = require('@arranjae/automate-features');
+          
+          const pipeline = new Pipeline({
+            cursorApiToken: process.env.CURSOR_API_TOKEN,
+            githubToken: process.env.GITHUB_TOKEN,
+            repoOwner: '${{ github.repository_owner }}',
+            repoName: '${{ github.event.repository.name }}',
+            config: {
+              solidRules: true,
+              atomicDesign: true,
+              lintRules: ['eslint'],
+            },
+          });
+          
+          pipeline.process({
+            prompt: '${{ github.event.inputs.prompt }}',
+            createBranch: ${{ github.event.inputs.create_branch }},
+            createIssue: true,
+            createPR: ${{ github.event.inputs.create_pr }},
+            runCodeReview: true,
+          }).then(result => {
+            if (result.success) {
+              console.log('✅ Código gerado com sucesso!');
+              if (result.branchName) console.log('Branch:', result.branchName);
+              if (result.prNumber) console.log('PR:', result.prNumber);
+              if (result.review) {
+                console.log('Review:', result.review.passed ? 'Passou' : 'Falhou');
+                console.log('Summary:', result.review.summary);
+              }
+            } else {
+              console.error('❌ Erro:', result.error);
+              process.exit(1);
+            }
+          }).catch(error => {
+            console.error('❌ Erro inesperado:', error.message);
+            process.exit(1);
+          });
+          "
+
+      - name: Comment PR with results
+        if: github.event.inputs.create_pr == 'true'
+        uses: actions/github-script@v6
+        env:
+          CURSOR_API_TOKEN: ${{ secrets.CURSOR_API_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            // TODO: Implementar comentário no PR com resultados do review
+

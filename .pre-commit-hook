@@ -1,0 +1,43 @@
+#!/bin/bash
+# Pre-commit hook para verificar se há credenciais sendo commitadas
+
+echo "🔍 Verificando credenciais antes do commit..."
+
+# Padrões de credenciais comuns
+PATTERNS=(
+  "password\\s*=\\s*[^\\s]{8,}"
+  "api[_-]?key\\s*=\\s*[^\\s]{10,}"
+  "secret[_-]?key\\s*=\\s*[^\\s]{10,}"
+  "access[_-]?token\\s*=\\s*[^\\s]{20,}"
+  "private[_-]?key\\s*=\\s*[^\\s]{20,}"
+  "ghp_[A-Za-z0-9]{36}"
+  "gho_[A-Za-z0-9]{36}"
+  "ghu_[A-Za-z0-9]{36}"
+  "ghs_[A-Za-z0-9]{36}"
+  "ghr_[A-Za-z0-9]{36}"
+  "sk-[A-Za-z0-9]{32,}"
+  "AIza[Sy][A-Za-z0-9]{35}"
+)
+
+FILES=$(git diff --cached --name-only)
+
+for file in $FILES; do
+  # Pular arquivos ignorados pelo gitignore
+  if git check-ignore -q "$file"; then
+    continue
+  fi
+  
+  # Verificar cada padrão
+  for pattern in "${PATTERNS[@]}"; do
+    if grep -qE "$pattern" "$file" 2>/dev/null; then
+      echo "❌ ERRO: Possível credencial encontrada em $file"
+      echo "   Padrão: $pattern"
+      echo "   Por favor, remova credenciais do código antes de commitar!"
+      exit 1
+    fi
+  done
+done
+
+echo "✅ Nenhuma credencial encontrada. Commit permitido."
+exit 0
+

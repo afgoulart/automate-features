@@ -1,0 +1,7 @@
+{
+  "solidRules": true,
+  "atomicDesign": true,
+  "lintRules": ["eslint"],
+  "autoApprove": false
+}
+
