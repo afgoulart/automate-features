@@ -32,6 +32,7 @@
     "build:watch": "tsc --watch",
     "clean": "rm -rf dist lib",
     "dev": "npm run build:watch",
+    "automate-features": "node bin/automate-features.js",
     "example": "node examples/basic-usage.js",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -45,6 +46,13 @@
     "prepack": "npm run build",
     "prepublishOnly": "npm run build && npm run lint:fix && npm run test",
     "prepare": "npm run build",
+    "release": "release-it",
+    "release:minor": "release-it minor",
+    "release:major": "release-it major",
+    "release:patch": "release-it patch",
+    "release:beta": "release-it --preRelease=beta",
+    "release:alpha": "release-it --preRelease=alpha",
+    "release:dry-run": "release-it --dry-run",
     "version": "npm run build",
     "postversion": "git push && git push --tags",
     "publish:dry-run": "npm run build && npm pack --dry-run",
@@ -76,12 +84,14 @@
     "registry": "https://registry.npmjs.org/"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=16.0.0",
+    "pnpm": ">=7.0.0"
   },
   "dependencies": {
     "axios": "^1.6.0"
   },
   "devDependencies": {
+    "@release-it/conventional-changelog": "^10.0.1",
     "@rollup/plugin-node-resolve": "^15.2.0",
     "@rollup/plugin-typescript": "^11.1.0",
     "@types/node": "^20.10.0",
@@ -92,6 +102,7 @@
     "eslint-plugin-prettier": "^5.0.1",
     "jest": "^29.7.0",
     "prettier": "^3.1.0",
+    "release-it": "^19.0.5",
     "rollup": "^4.6.0",
     "ts-jest": "^29.1.1",
     "tslib": "^2.8.1",

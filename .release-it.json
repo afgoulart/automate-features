@@ -1,0 +1,32 @@
+{
+  "git": {
+    "commitMessage": "chore: release v${version}",
+    "requireCleanWorkingDir": true,
+    "requireUpstream": true,
+    "requireCommits": true,
+    "tagName": "v${version}",
+    "push": true,
+    "tag": true
+  },
+  "github": {
+    "release": true,
+    "releaseName": "v${version}",
+    "autoGenerate": false
+  },
+  "npm": {
+    "publish": false,
+    "publishPath": "."
+  },
+  "hooks": {
+    "before:init": ["npm run build", "npm run lint:fix", "npm test"],
+    "after:bump": "npm run build",
+    "after:release": "echo 'Release ${version} completed successfully!'"
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "preset": "angular",
+      "infile": "CHANGELOG.md"
+    }
+  }
+}
+
