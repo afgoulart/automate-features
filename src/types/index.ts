@@ -12,6 +12,10 @@ export interface PipelineConfig {
   aiProviderType?: 'CURSOR' | 'CLAUDE_CODE';
   /** AI provider API URL - defaults to PROMPT_API_URL env var or provider default */
   apiUrl?: string;
+  /** Use CLI instead of HTTP API (default: false) */
+  useCli?: boolean;
+  /** Source directory for CLI context (only used with CLI mode) */
+  sourceDir?: string;
   /** GitHub API token (optional) */
   githubToken?: string;
   /** Repository owner (required if using GitHub features) */

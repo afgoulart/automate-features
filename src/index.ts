@@ -30,6 +30,8 @@ export { AIProvider, AIProviderType } from './integrations/AIProvider';
 export { AIProviderFactory } from './integrations/AIProviderFactory';
 export { CursorProvider } from './integrations/providers/CursorProvider';
 export { ClaudeCodeProvider } from './integrations/providers/ClaudeCodeProvider';
+export { CursorCliProvider } from './integrations/providers/CursorCliProvider';
+export { ClaudeCodeCliProvider } from './integrations/providers/ClaudeCodeCliProvider';
 
 // Type exports
 export * from './types';

@@ -15,13 +15,23 @@ lib/
 build/
 *.log
 
+# Rust build outputs
+rust/target/
+rust/**/*.rs.bk
+rust/Cargo.lock
+
 # IDE
 .vscode/
 .idea/
+.claude/
+
 *.swp
 *.swo
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Test outputs
+TesteFeature/
 
