@@ -40,10 +40,10 @@ export class ClaudeCodeCliProvider implements AIProvider {
   async generateCode(prompt: string, config?: GeneratorConfig): Promise<string> {
     // Always try to use Rust CLI first when in CLI mode
     console.log('🔧 Attempting to use Claude Code CLI via Rust module');
-    
+
     // Get API key from constructor or env
     const apiKey = this.getApiKey();
-    
+
     if (!apiKey) {
       throw new Error('Claude Code API key is required');
     }
@@ -72,7 +72,7 @@ export class ClaudeCodeCliProvider implements AIProvider {
       if (error instanceof Error && error.message.includes('CLI')) {
         throw error;
       }
-      
+
       // Check if CLI is available and provide helpful error message
       let cliAvailable = false;
       try {
@@ -81,20 +81,20 @@ export class ClaudeCodeCliProvider implements AIProvider {
         // Ignore check errors
         console.warn('⚠️ Unable to verify Claude Code CLI availability:', checkError);
       }
-      
+
       if (!cliAvailable) {
         throw new Error(
           'Claude CLI (claude) is not installed or not in PATH. ' +
-          'Install it with: brew install --cask claude or curl -fsSL https://claude.ai/install.sh | bash ' +
-          'To use HTTP API mode instead, remove USE_CLI=true from your command.'
+            'Install it with: brew install --cask claude or curl -fsSL https://claude.ai/install.sh | bash ' +
+            'To use HTTP API mode instead, remove USE_CLI=true from your command.'
         );
       }
-      
+
       // Re-throw original error with more context
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       throw new Error(
         `Failed to execute Claude Code CLI: ${errorMsg}. ` +
-        `Make sure the CLI is installed and ANTHROPIC_API_KEY is set correctly.`
+          `Make sure the CLI is installed and ANTHROPIC_API_KEY is set correctly.`
       );
     }
   }
@@ -122,4 +122,3 @@ export class ClaudeCodeCliProvider implements AIProvider {
     }
   }
 }
-

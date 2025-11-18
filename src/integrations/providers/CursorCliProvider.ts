@@ -17,9 +17,7 @@ export class CursorCliProvider implements AIProvider {
     this.sourceDir = sourceDir;
 
     const baseURL =
-      process.env.PROMPT_API_URL ||
-      process.env.CURSOR_API_URL ||
-      'https://api.cursor.sh/v1';
+      process.env.PROMPT_API_URL || process.env.CURSOR_API_URL || 'https://api.cursor.sh/v1';
 
     this.apiClient = axios.create({
       baseURL,
@@ -37,7 +35,7 @@ export class CursorCliProvider implements AIProvider {
   async generateCode(prompt: string, config?: GeneratorConfig): Promise<string> {
     try {
       console.log('🔧 Using Cursor API with source context');
-      
+
       // Collect source code if sourceDir is provided
       let sourceContext: string | undefined;
       if (this.sourceDir) {
@@ -46,7 +44,9 @@ export class CursorCliProvider implements AIProvider {
           sourceContext = await rust.collectSourceCode(this.sourceDir);
           console.log(`✅ Collected ${sourceContext.length} characters of source code`);
         } catch (error) {
-          console.warn(`⚠️  Could not collect source code: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          console.warn(
+            `⚠️  Could not collect source code: ${error instanceof Error ? error.message : 'Unknown error'}`
+          );
         }
       }
 
@@ -58,21 +58,23 @@ export class CursorCliProvider implements AIProvider {
 
       // Use HTTP API with enhanced prompt
       console.log(`🌐 Calling Cursor API at: ${this.apiClient.defaults.baseURL}/generate`);
-      const response = await this.apiClient.post('/generate', {
-        prompt: fullPrompt,
-        language: config?.language || 'typescript',
-        framework: config?.framework,
-        context: config?.context,
-      }).catch((error) => {
-        if (axios.isAxiosError(error) && error.code === 'ENOTFOUND') {
-          throw new Error(
-            `Cursor API endpoint not found (${this.apiClient.defaults.baseURL}). ` +
-            `The Cursor API may not be publicly available. ` +
-            `Try using Claude Code instead: PROMPT_AI_TYPE=CLAUDE_CODE`
-          );
-        }
-        throw error;
-      });
+      const response = await this.apiClient
+        .post('/generate', {
+          prompt: fullPrompt,
+          language: config?.language || 'typescript',
+          framework: config?.framework,
+          context: config?.context,
+        })
+        .catch(error => {
+          if (axios.isAxiosError(error) && error.code === 'ENOTFOUND') {
+            throw new Error(
+              `Cursor API endpoint not found (${this.apiClient.defaults.baseURL}). ` +
+                `The Cursor API may not be publicly available. ` +
+                `Try using Claude Code instead: PROMPT_AI_TYPE=CLAUDE_CODE`
+            );
+          }
+          throw error;
+        });
 
       if (response.data && response.data.code) {
         return response.data.code;
@@ -99,4 +101,3 @@ export class CursorCliProvider implements AIProvider {
     }
   }
 }
-

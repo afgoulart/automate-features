@@ -23,8 +23,10 @@ export class AIProviderFactory {
     useCli: boolean = false,
     sourceDir?: string
   ): AIProvider {
-    console.log(`[AIProviderFactory] create called: type=${type}, useCli=${useCli}, sourceDir=${sourceDir}`);
-    
+    console.log(
+      `[AIProviderFactory] create called: type=${type}, useCli=${useCli}, sourceDir=${sourceDir}`
+    );
+
     // Use CLI providers if useCli is true
     if (useCli) {
       console.log(`[AIProviderFactory] Creating CLI provider for ${type}`);
@@ -59,21 +61,22 @@ export class AIProviderFactory {
    */
   static createFromEnv(apiUrl?: string, useCli: boolean = false, sourceDir?: string): AIProvider {
     const providerType = (process.env.PROMPT_AI_TYPE || 'CURSOR').toUpperCase() as AIProviderType;
-    
+
     // PROMPT_AI_KEY é a variável única que funciona para qualquer tipo de AI
     // Para Claude Code, também aceita ANTHROPIC_API_KEY (padrão da Anthropic)
     let apiKey = process.env.PROMPT_AI_KEY || process.env.CURSOR_API_TOKEN || '';
-    
+
     // Se for CLAUDE_CODE e não tiver PROMPT_AI_KEY, tenta ANTHROPIC_API_KEY
     if (!apiKey && providerType === 'CLAUDE_CODE') {
       apiKey = process.env.ANTHROPIC_API_KEY || '';
     }
 
     if (!apiKey) {
-      const errorMsg = providerType === 'CLAUDE_CODE'
-        ? 'API key is required for Claude Code. Set PROMPT_AI_KEY or ANTHROPIC_API_KEY environment variable.'
-        : 'PROMPT_AI_KEY environment variable is required. ' +
-          'Set PROMPT_AI_TYPE to CURSOR or CLAUDE_CODE and provide PROMPT_AI_KEY with the API key/token.';
+      const errorMsg =
+        providerType === 'CLAUDE_CODE'
+          ? 'API key is required for Claude Code. Set PROMPT_AI_KEY or ANTHROPIC_API_KEY environment variable.'
+          : 'PROMPT_AI_KEY environment variable is required. ' +
+            'Set PROMPT_AI_TYPE to CURSOR or CLAUDE_CODE and provide PROMPT_AI_KEY with the API key/token.';
       throw new Error(errorMsg);
     }
 
