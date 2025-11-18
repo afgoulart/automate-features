@@ -8,18 +8,46 @@ import { AIProviderFactory } from '../integrations/AIProviderFactory';
 export class CodeGenerator {
   private aiProvider: AIProvider;
 
-  constructor(aiProviderOrToken?: AIProvider | string, apiUrl?: string) {
+  constructor(
+    aiProviderOrToken?: AIProvider | string,
+    apiUrl?: string,
+    useCli: boolean = false,
+    sourceDir?: string,
+    aiProviderType?: 'CURSOR' | 'CLAUDE_CODE'
+  ) {
+    console.log(`[CodeGenerator] Constructor called with useCli=${useCli}, sourceDir=${sourceDir}, aiProviderType=${aiProviderType}`);
+    
     if (!aiProviderOrToken) {
       // Try to create from environment variables
-      this.aiProvider = AIProviderFactory.createFromEnv(apiUrl);
+      console.log('[CodeGenerator] Creating provider from environment variables');
+      this.aiProvider = AIProviderFactory.createFromEnv(apiUrl, useCli, sourceDir);
     } else if (typeof aiProviderOrToken === 'string') {
-      // Legacy support: if string provided, try to create from env or use as Cursor token
-      const providerType = (process.env.PROMPT_AI_TYPE || 'CURSOR').toUpperCase();
-      this.aiProvider = AIProviderFactory.create(providerType as any, aiProviderOrToken, apiUrl);
+      // Use provided type, or fallback to env var, or default to CURSOR
+      let providerTypeStr = aiProviderType || process.env.PROMPT_AI_TYPE || 'CURSOR';
+      
+      // Normalize common typos before converting to type
+      providerTypeStr = providerTypeStr.toUpperCase()
+        .replace('CLOUD_CODE', 'CLAUDE_CODE')
+        .replace('CLOUD', 'CLAUDE')
+        .replace('COURSOR', 'CURSOR');
+      
+      const providerType = (providerTypeStr === 'CLAUDE_CODE' ? 'CLAUDE_CODE' : 'CURSOR') as 'CURSOR' | 'CLAUDE_CODE';
+      
+      console.log(`[CodeGenerator] Creating provider with type=${providerType}, useCli=${useCli}`);
+      this.aiProvider = AIProviderFactory.create(
+        providerType,
+        aiProviderOrToken,
+        apiUrl,
+        useCli,
+        sourceDir
+      );
     } else {
       // AIProvider instance provided
+      console.log('[CodeGenerator] Using provided AIProvider instance');
       this.aiProvider = aiProviderOrToken;
     }
+    
+    console.log(`[CodeGenerator] Provider type: ${this.aiProvider.constructor.name}`);
   }
 
   /**

@@ -1,6 +1,6 @@
 {
   "name": "@arranjae/automate-features",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Development automation module with AI code generation, automated code review (SOLID, Atomic Design, Lint), and CI/CD pipeline integration",
   "main": "./dist/index.js",
   "module": "./dist/index.esm.js",
@@ -25,12 +25,15 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "npm run clean && npm run build:types && npm run build:bundle && npm run copy:source",
+    "build": "npm run build:rust && npm run clean && npm run build:types && npm run build:bundle && npm run copy:source",
+    "build:rust": "cd rust && cargo build --release && cd .. && node scripts/setup-rust-module.js",
+    "build:rust:dev": "cd rust && cargo build",
     "build:types": "tsc",
     "copy:source": "node scripts/copy-source-files.js",
     "build:bundle": "rollup -c",
     "build:watch": "tsc --watch",
     "clean": "rm -rf dist lib",
+    "clean:rust": "cd rust && cargo clean",
     "dev": "npm run build:watch",
     "automate-features": "node bin/automate-features.js",
     "example": "node examples/basic-usage.js",
@@ -43,6 +46,7 @@
     "format:check": "prettier --check \"src/**/*.ts\"",
     "check:solid": "node scripts/check-solid.js",
     "check:atomic": "node scripts/check-atomic.js",
+    "setup:github-token": "bash scripts/setup-github-token.sh",
     "prepack": "npm run build",
     "prepublishOnly": "npm run build && npm run lint:fix && npm run test",
     "prepare": "npm run build",
@@ -56,7 +60,9 @@
     "version": "npm run build",
     "postversion": "git push && git push --tags",
     "publish:dry-run": "npm run build && npm pack --dry-run",
-    "publish:check": "npm run build && npm pack"
+    "publish:check": "npm run build && npm pack",
+    "link:local": "npm run build && npm link",
+    "pack:test": "npm run build && npm pack"
   },
   "keywords": [
     "automation",
@@ -88,7 +94,8 @@
     "pnpm": ">=7.0.0"
   },
   "dependencies": {
-    "axios": "^1.6.0"
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
     "@release-it/conventional-changelog": "^10.0.1",

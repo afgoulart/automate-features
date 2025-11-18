@@ -6,31 +6,35 @@ O módulo `@arranjae/automate-features` suporta múltiplos provedores de AI atra
 
 ### 1. Cursor (`CURSOR`)
 
-O provedor padrão, integração com a API do Cursor.
+⚠️ **Nota Importante**: O Cursor não possui uma API HTTP pública. A URL `https://api.cursor.sh/v1` não está disponível publicamente. O Cursor é principalmente um editor de código.
 
-**Configuração:**
+**Recomendação**: Use **Claude Code** (`CLAUDE_CODE`) que possui uma API pública e funcional.
+
+**Configuração (se você tiver acesso à API privada do Cursor):**
 
 ```env
 PROMPT_AI_TYPE=CURSOR
 PROMPT_AI_KEY=seu_cursor_api_token
-PROMPT_API_URL=https://api.cursor.sh/v1  # Opcional, usa padrão se não fornecido
+PROMPT_API_URL=https://sua-url-privada-cursor  # URL privada/customizada se disponível
 ```
 
 **Importante**:
 
 - `PROMPT_AI_KEY` é a mesma variável usada para qualquer tipo de AI. Apenas o `PROMPT_AI_TYPE` muda.
 - `PROMPT_API_URL` é genérica e funciona para qualquer tipo de AI (opcional, tem valor padrão).
+- Se você não tem acesso à API privada do Cursor, use Claude Code.
 
-**Como obter a chave:**
+**Como obter a chave (se disponível):**
 
 1. Acesse: `https://cursor.sh/settings`
 2. Navegue até API/Integrations
 3. Gere ou copie o token
 4. Use como `PROMPT_AI_KEY`
+5. **Nota**: Pode ser necessário fornecer uma URL customizada via `PROMPT_API_URL`
 
-### 2. Claude Code (`CLAUDE_CODE`)
+### 2. Claude Code (`CLAUDE_CODE`) ⭐ **Recomendado**
 
-Integração com a API da Anthropic (Claude).
+Integração com a API da Anthropic (Claude). **Esta é a opção recomendada** pois possui uma API HTTP pública e funcional.
 
 **Configuração:**
 
