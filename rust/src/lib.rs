@@ -17,6 +17,7 @@ pub struct GenerateCodeRequest {
     pub language: Option<String>,
     pub framework: Option<String>,
     pub context: Option<String>,
+    pub model: Option<String>, // Claude model: "opus", "sonnet", "haiku"
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -128,6 +129,7 @@ async fn execute_claude_cli(
     prompt: &str,
     api_key: &str,
     source_dir: Option<&str>,
+    model: Option<&str>,
 ) -> napi::Result<String> {
     // Claude CLI has direct access to project files, so we don't need to pass context
     // This also prevents timeouts from large context payloads
@@ -138,6 +140,14 @@ async fn execute_claude_cli(
     // Determine working directory (use source_dir if provided, otherwise current dir)
     let working_dir = source_dir.unwrap_or(".");
     eprintln!("[Rust] Claude CLI working directory: {}", working_dir);
+
+    // Determine model to use (priority: parameter > env var > default)
+    let model_from_env = std::env::var("CLAUDE_MODEL").ok();
+    let model_name = model
+        .or_else(|| model_from_env.as_deref())
+        .unwrap_or("sonnet");  // Default to sonnet
+
+    eprintln!("[Rust] Using Claude model: {}", model_name);
 
     // Try to find claude in common locations
     let claude_path = if std::path::Path::new("/Users/msc/.local/bin/claude").exists() {
@@ -160,7 +170,7 @@ async fn execute_claude_cli(
         .arg("--output-format")
         .arg("text")
         .arg("--model")
-        .arg("sonnet")
+        .arg(model_name)
         .arg("--dangerously-skip-permissions")
         .arg("--system-prompt")
         .arg("You are an expert software developer. Generate complete, production-ready code following best practices. Return ONLY the code implementation without asking for permissions or confirmations. Generate all necessary files and code directly.")
@@ -235,7 +245,7 @@ pub async fn generate_code_cli(request: GenerateCodeRequest) -> napi::Result<Gen
     // Execute appropriate CLI based on provider type
     let code = match request.provider_type.to_uppercase().as_str() {
         "CURSOR" => execute_cursor_cli(&request.prompt, &request.api_key, source_context.as_deref()).await?,
-        "CLAUDE_CODE" | "CLAUDE" => execute_claude_cli(&request.prompt, &request.api_key, request.source_dir.as_deref()).await?,
+        "CLAUDE_CODE" | "CLAUDE" => execute_claude_cli(&request.prompt, &request.api_key, request.source_dir.as_deref(), request.model.as_deref()).await?,
         _ => {
             return Ok(GenerateCodeResponse {
                 code: String::new(),

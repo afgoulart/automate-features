@@ -19,6 +19,8 @@ build/
 rust/target/
 rust/**/*.rs.bk
 rust/Cargo.lock
+target/
+Cargo.lock
 
 # IDE
 .vscode/
