@@ -86,22 +86,42 @@ export class ClaudeCodeProvider implements AIProvider {
    * Build system prompt based on configuration
    */
   private buildSystemPrompt(config?: GeneratorConfig): string {
-    let prompt =
-      'You are an expert code generator. Generate clean, production-ready code following best practices.';
+    let prompt = `You are an expert code generator. Generate clean, production-ready code following best practices.
+
+When generating multiple files, use this format for EACH file:
+
+## File: path/to/file.ext
+\`\`\`language
+// file content here
+\`\`\`
+
+For example:
+## File: src/components/Button.tsx
+\`\`\`tsx
+export const Button = () => { ... }
+\`\`\`
+
+## File: src/components/Button.test.tsx
+\`\`\`tsx
+describe('Button', () => { ... })
+\`\`\`
+
+Important:
+- Use complete file paths (e.g., src/components/Button.tsx, not just Button.tsx)
+- Include all necessary files (components, tests, types, configs, etc.)
+- Follow project structure conventions`;
 
     if (config?.language) {
-      prompt += ` Use ${config.language} as the programming language.`;
+      prompt += `\n- Use ${config.language} as the primary programming language`;
     }
 
     if (config?.framework) {
-      prompt += ` Use ${config.framework} framework.`;
+      prompt += `\n- Use ${config.framework} framework`;
     }
 
     if (config?.context) {
-      prompt += ` Context: ${config.context}`;
+      prompt += `\n- Additional context: ${config.context}`;
     }
-
-    prompt += ' Return only the code without explanations, wrapped in code blocks if needed.';
 
     return prompt;
   }

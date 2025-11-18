@@ -1,6 +1,7 @@
 import { GeneratedCode, GeneratorConfig } from '../types';
 import { AIProvider } from '../integrations/AIProvider';
 import { AIProviderFactory } from '../integrations/AIProviderFactory';
+import { CodeParser, ParsedFile } from './CodeParser';
 
 /**
  * Code generator using AI providers (abstracted)
@@ -70,6 +71,52 @@ export class CodeGenerator {
     } catch (error) {
       throw new Error(
         `Failed to generate code: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
+    }
+  }
+
+  /**
+   * Generate code and parse into multiple files
+   */
+  async generateAndParse(
+    prompt: string,
+    config?: GeneratorConfig
+  ): Promise<{ code: string; files: ParsedFile[] }> {
+    try {
+      const code = await this.aiProvider.generateCode(prompt, config);
+      const parseResult = CodeParser.parse(code);
+
+      console.log(CodeParser.getSummary(parseResult));
+
+      return {
+        code,
+        files: parseResult.files,
+      };
+    } catch (error) {
+      throw new Error(
+        `Failed to generate and parse code: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
+    }
+  }
+
+  /**
+   * Generate code, parse, and write files to disk
+   */
+  async generateAndWrite(
+    prompt: string,
+    baseDir: string,
+    config?: GeneratorConfig
+  ): Promise<ParsedFile[]> {
+    try {
+      const { files } = await this.generateAndParse(prompt, config);
+
+      console.log(`\n📝 Writing ${files.length} file(s) to ${baseDir}...\n`);
+      await CodeParser.writeFiles(files, baseDir);
+
+      return files;
+    } catch (error) {
+      throw new Error(
+        `Failed to generate and write files: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
   }

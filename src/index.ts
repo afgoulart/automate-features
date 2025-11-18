@@ -9,6 +9,8 @@
 export { Pipeline } from './core/Pipeline';
 export { CodeGenerator } from './core/CodeGenerator';
 export { CodeReviewer } from './core/CodeReviewer';
+export { CodeParser } from './core/CodeParser';
+export type { ParsedFile, ParseResult } from './core/CodeParser';
 
 // Generator exports
 export { BranchGenerator } from './generators/BranchGenerator';
