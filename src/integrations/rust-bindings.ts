@@ -22,6 +22,12 @@ export interface GenerateCodeResponse {
   error?: string;
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-var-requires */
+
+import * as path from 'path';
+import * as fs from 'fs';
+
 /**
  * Rust module bindings
  * This will be loaded from the compiled Rust binary
@@ -36,9 +42,6 @@ async function loadRustModule(): Promise<any> {
     return rustModule;
   }
 
-  const path = require('path');
-  const fs = require('fs');
-  
   // Try to load from different possible locations
   // __dirname in dist will be dist/integrations, so we need to go up to project root
   const projectRoot = path.resolve(__dirname, '../../..');
@@ -54,16 +57,19 @@ async function loadRustModule(): Promise<any> {
   ];
 
   let lastError: Error | null = null;
-  
+
   for (const modulePath of possiblePaths) {
     try {
-      const resolvedPath = path.isAbsolute(modulePath) ? modulePath : path.resolve(process.cwd(), modulePath);
-      
+      const resolvedPath = path.isAbsolute(modulePath)
+        ? modulePath
+        : path.resolve(process.cwd(), modulePath);
+
       // Check if file exists
       if (!fs.existsSync(resolvedPath)) {
         continue;
       }
-      
+
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       rustModule = require(resolvedPath);
       console.log(`✅ Rust module loaded from: ${resolvedPath}`);
       return rustModule;
@@ -74,10 +80,10 @@ async function loadRustModule(): Promise<any> {
   }
 
   // If we get here, module wasn't found
-  const errorMsg = lastError 
+  const errorMsg = lastError
     ? `Rust module not found. Last error: ${lastError.message}. Please build it first: npm run build:rust`
     : 'Rust module not found. Please build it first: npm run build:rust';
-  
+
   throw new Error(errorMsg);
 }
 
@@ -92,11 +98,9 @@ export async function collectSourceCode(sourceDir: string): Promise<string> {
 /**
  * Generate code using CLI (Cursor or Claude Code)
  */
-export async function generateCodeCli(
-  request: GenerateCodeRequest
-): Promise<GenerateCodeResponse> {
+export async function generateCodeCli(request: GenerateCodeRequest): Promise<GenerateCodeResponse> {
   const module = await loadRustModule();
-  
+
   // Convert to camelCase for NAPI (Rust will accept both via serde alias)
   const sanitizedRequest: any = {
     prompt: request.prompt || '',
@@ -107,12 +111,16 @@ export async function generateCodeCli(
     framework: request.framework,
     context: request.context,
   };
-  
+
   console.log('[rust-bindings] Calling Rust with:', JSON.stringify(sanitizedRequest, null, 2));
-  
+
   try {
     const result = await module.generateCodeCli(sanitizedRequest);
-    console.log('[rust-bindings] Rust returned:', { success: result.success, hasCode: !!result.code, error: result.error });
+    console.log('[rust-bindings] Rust returned:', {
+      success: result.success,
+      hasCode: !!result.code,
+      error: result.error,
+    });
     return result;
   } catch (error) {
     console.error('[rust-bindings] Error calling Rust:', error);
@@ -127,4 +135,3 @@ export async function checkCliAvailable(providerType: string): Promise<boolean> 
   const module = await loadRustModule();
   return module.checkCliAvailable(providerType);
 }
-
