@@ -52,10 +52,11 @@ export class AIProviderFactory {
       case 'CLAUDE_CODE':
         return new ClaudeCodeProvider(apiKey, apiUrl);
 
-      case 'GEMINI':
+      case 'GEMINI': {
         // Get Gemini model from environment or use default
-        const geminiModel = process.env.GEMINI_MODEL || 'gemini-pro';
+        const geminiModel = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
         return new GeminiProvider(apiKey, geminiModel);
+      }
 
       default:
         throw new Error(`Unsupported AI provider type: ${type}`);
