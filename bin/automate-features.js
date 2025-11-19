@@ -24,8 +24,89 @@ const { Pipeline } = require('../dist/index.js');
 const fs = require('fs');
 const path = require('path');
 
+function showHelp() {
+  console.log(`
+╔════════════════════════════════════════════════════════════╗
+║        @arranjae/automate-features - AI Code Generator    ║
+╚════════════════════════════════════════════════════════════╝
+
+📖 USAGE:
+   automate-features [OPTIONS] <feature.md>
+
+📝 DESCRIPTION:
+   Development automation tool with AI code generation, automated
+   code review (SOLID, Atomic Design, Lint), and CI/CD integration.
+
+🔧 OPTIONS:
+   --prompt-key=KEY        API key for AI provider (required)
+                          Env: PROMPT_AI_KEY or ANTHROPIC_API_KEY
+
+   --prompt-type=TYPE      AI provider type (default: CLAUDE_CODE)
+                          Options: CLAUDE_CODE, CURSOR
+                          Env: PROMPT_AI_TYPE
+
+   --prompt-api-url=URL    Custom API URL (optional)
+                          Env: PROMPT_API_URL
+
+   --source=DIR           Source directory for context (optional)
+                          Env: SOURCE
+
+   -h, --help             Show this help message
+   -v, --version          Show version number
+
+🌍 ENVIRONMENT VARIABLES:
+   USE_CLI                Enable CLI mode (default: false, use API)
+                          Values: true, false
+
+   CLAUDE_MODEL           Claude model to use (default: sonnet)
+                          Options: opus, sonnet, haiku
+
+   ANTHROPIC_API_KEY      Claude API key (alternative to PROMPT_AI_KEY)
+   PROMPT_AI_KEY          Universal AI provider key
+   PROMPT_AI_TYPE         AI provider type (CLAUDE_CODE or CURSOR)
+   GITHUB_TOKEN           GitHub token for PR/Issue creation
+
+📚 EXAMPLES:
+   # Basic usage with API mode (default)
+   automate-features feature.md
+
+   # With explicit API key
+   automate-features --prompt-key=sk-xxx feature.md
+
+   # Using Claude Code API with custom model
+   CLAUDE_MODEL=opus automate-features feature.md
+
+   # Using CLI mode with source context
+   USE_CLI=true automate-features --source=. feature.md
+
+   # With environment variables
+   export ANTHROPIC_API_KEY=sk-xxx
+   export PROMPT_AI_TYPE=CLAUDE_CODE
+   automate-features feature.md
+
+📖 DOCUMENTATION:
+   https://github.com/arranjae/automate-features
+
+💡 For more information, visit the documentation or check the README.
+`);
+}
+
 function parseArgs() {
   const args = process.argv.slice(2);
+
+  // Check for help flag
+  if (args.includes('-h') || args.includes('--help')) {
+    showHelp();
+    process.exit(0);
+  }
+
+  // Check for version flag
+  if (args.includes('-v') || args.includes('--version')) {
+    const pkg = require('../package.json');
+    console.log(`v${pkg.version}`);
+    process.exit(0);
+  }
+
   const config = {
     promptKey: process.env.PROMPT_KEY || null, // Aceita --propt-key ou --prompt-key
     promptApiUrl: process.env.PROMPT_API_URL || null,  // Aceita --propt-api-url ou --prompt-api-url
