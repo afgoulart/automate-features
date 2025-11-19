@@ -30,8 +30,9 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "npm run build:rust && npm run clean && npm run build:types && npm run build:bundle && npm run copy:source",
+    "build": "npm run build:rust && npm run clean && npm run build:types && npm run build:bundle && npm run copy:source && npm run copy:rust-binary",
     "build:rust": "cd rust && cargo build --release && cd .. && node scripts/setup-rust-module.js",
+    "copy:rust-binary": "node scripts/copy-rust-binary.js",
     "build:rust:dev": "cd rust && cargo build",
     "build:types": "tsc",
     "copy:source": "node scripts/copy-source-files.js",

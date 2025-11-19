@@ -46,6 +46,11 @@ async function loadRustModule(): Promise<any> {
   // __dirname in dist will be dist/integrations, so we need to go up to project root
   const projectRoot = path.resolve(__dirname, '../../..');
   const possiblePaths = [
+    // First try the bundled binary in dist/native (for npm packages)
+    path.resolve(__dirname, '../native/automate_features_rust.node'),
+    path.resolve(__dirname, '../../native/automate_features_rust.node'),
+    path.resolve(process.cwd(), 'dist/native/automate_features_rust.node'),
+    // Then try the development locations
     path.resolve(projectRoot, 'rust/target/release/automate_features_rust.node'),
     path.resolve(process.cwd(), 'rust/target/release/automate_features_rust.node'),
     path.resolve(__dirname, '../../rust/target/release/automate_features_rust.node'),
