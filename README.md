@@ -10,10 +10,91 @@ Módulo de automação de desenvolvimento com geração de código, code review 
 - 🔄 **Reutilizável** - Pode ser usado em múltiplos projetos
 - 🚀 **Plug & Play** - Integração rápida em pipelines existentes
 
+## ✨ Novidades da Versão 0.1.3
+
+**🎉 Melhorias na CLI e Instalação Global:**
+
+- ✅ **API Mode como Padrão** - Usa Claude Code API diretamente quando `USE_CLI` não está configurado ou é `false`
+- ✅ **Instalação Global Simplificada** - Comando `automate-features` disponível globalmente após `npm install -g`
+- ✅ **Setup Automático de PATH** - Script interativo pós-instalação para adicionar o comando ao PATH
+- ✅ **Flag --help Completa** - Documentação detalhada acessível via `--help` e `--version`
+- ✅ **Wrapper Bash Inteligente** - Resolução automática de symlinks para funcionar em qualquer contexto
+- ✅ **Suporte a Múltiplas Shells** - Detecção automática de bash/zsh para configuração de PATH
+
+**Como Usar:**
+
+```bash
+# Instalação global
+pnpm add -g @arranjae/automate-features
+
+# Agora o comando está disponível globalmente!
+automate-features --help
+automate-features --version
+automate-features feature.md
+```
+
 ## Instalação
+
+### Instalação Global (Recomendado)
+
+```bash
+# Com npm
+npm install -g @arranjae/automate-features
+
+# Com pnpm
+pnpm add -g @arranjae/automate-features
+
+# Após a instalação, o comando estará disponível globalmente
+automate-features --help
+```
+
+### Instalação Local
 
 ```bash
 npm install @arranjae/automate-features
+```
+
+Após a instalação local, você será perguntado se deseja adicionar o comando ao PATH para uso global.
+
+## Uso via CLI
+
+### Comando Global
+
+```bash
+# Mostrar ajuda
+automate-features --help
+
+# Mostrar versão
+automate-features --version
+
+# Uso básico com API mode (padrão)
+automate-features feature.md
+
+# Com API key explícita
+automate-features --prompt-key=sk-xxx feature.md
+
+# Usando Claude Code API com modelo específico
+CLAUDE_MODEL=opus automate-features feature.md
+
+# Usando modo CLI com contexto de código fonte
+USE_CLI=true automate-features --source=. feature.md
+```
+
+### Variáveis de Ambiente Suportadas
+
+```bash
+# API Configuration
+ANTHROPIC_API_KEY=sk-xxx          # Claude API key
+PROMPT_AI_KEY=sk-xxx              # Universal AI provider key
+PROMPT_AI_TYPE=CLAUDE_CODE        # AI provider (CLAUDE_CODE or CURSOR)
+
+# Mode Configuration
+USE_CLI=false                     # Use API mode (default: false)
+CLAUDE_MODEL=sonnet              # Claude model (opus, sonnet, haiku)
+
+# Optional
+GITHUB_TOKEN=ghp_xxx             # For PR/Issue creation
+SOURCE=/path/to/project          # Source directory for context
 ```
 
 ## Início Rápido
@@ -167,7 +248,7 @@ Leia o [CONTRIBUTING.md](./CONTRIBUTING.md) completo para mais detalhes.
 ### ✅ Versão 0.1.x (Atual)
 
 **Funcionalidades Implementadas:**
-- ✅ Geração de código via Claude Code API
+- ✅ Geração de código via Claude Code API (API mode padrão)
 - ✅ Geração de código via Claude Code CLI (modo local)
 - ✅ Suporte inicial para Cursor API
 - ✅ Módulo Rust (NAPI) para performance
@@ -175,6 +256,10 @@ Leia o [CONTRIBUTING.md](./CONTRIBUTING.md) completo para mais detalhes.
 - ✅ Code review automático
 - ✅ Validação SOLID e Atomic Design
 - ✅ CLI interativa com perguntas pós-geração
+- ✅ Instalação global via npm/pnpm (v0.1.3)
+- ✅ Setup automático de PATH pós-instalação (v0.1.3)
+- ✅ Flag --help e --version completas (v0.1.3)
+- ✅ Wrapper bash com resolução de symlinks (v0.1.3)
 - ✅ Documentação completa e wiki
 
 ### 🚧 Versão 0.2.0 (Próxima Release)
@@ -285,6 +370,7 @@ Você pode influenciar o roadmap:
 |--------|--------------|--------|
 | 0.1.0 | Nov 2024 | ✅ Released |
 | 0.1.1 | Dez 2024 | ✅ Released |
+| 0.1.3 | Jan 2025 | ✅ Released |
 | 0.2.0 | Mar 2025 | 🚧 Em Desenvolvimento |
 | 0.3.0 | Jun 2025 | 📋 Planejado |
 | 1.0.0 | Set 2025 | 📋 Planejado |
