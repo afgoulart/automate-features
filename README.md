@@ -10,16 +10,26 @@ Módulo de automação de desenvolvimento com geração de código, code review 
 - 🔄 **Reutilizável** - Pode ser usado em múltiplos projetos
 - 🚀 **Plug & Play** - Integração rápida em pipelines existentes
 
-## ✨ Novidades da Versão 0.1.3
+## ✨ Novidades da Versão 0.1.6
 
-**🎉 Melhorias na CLI e Instalação Global:**
+**🚀 Melhorias Críticas de Instalação e Performance:**
 
+- ✅ **Módulo Rust Incluído** - Binário nativo (2.1 MB) agora vem empacotado no npm, sem necessidade de compilar
+- ✅ **Instalação Ultra-Rápida** - Removido build automático na instalação, pacote funciona imediatamente após `npm install`
+- ✅ **Zero Dependências de Build** - Usuários não precisam ter Rust, Cargo ou ferramentas de compilação instaladas
 - ✅ **API Mode como Padrão** - Usa Claude Code API diretamente quando `USE_CLI` não está configurado ou é `false`
 - ✅ **Instalação Global Simplificada** - Comando `automate-features` disponível globalmente após `npm install -g`
 - ✅ **Setup Automático de PATH** - Script interativo pós-instalação para adicionar o comando ao PATH
 - ✅ **Flag --help Completa** - Documentação detalhada acessível via `--help` e `--version`
 - ✅ **Wrapper Bash Inteligente** - Resolução automática de symlinks para funcionar em qualquer contexto
 - ✅ **Suporte a Múltiplas Shells** - Detecção automática de bash/zsh para configuração de PATH
+
+**📦 Informações do Pacote:**
+
+- **Tamanho comprimido:** ~1.0 MB
+- **Tamanho instalado:** ~2.6 MB
+- **Arquivos incluídos:** 149
+- **Tempo de instalação:** < 10 segundos (sem build)
 
 **Como Usar:**
 
@@ -252,14 +262,17 @@ Leia o [CONTRIBUTING.md](./CONTRIBUTING.md) completo para mais detalhes.
 - ✅ Geração de código via Claude Code CLI (modo local)
 - ✅ Suporte inicial para Cursor API
 - ✅ Módulo Rust (NAPI) para performance
+- ✅ Binário Rust empacotado no npm (v0.1.5+)
+- ✅ Instalação sem build - plug & play (v0.1.6)
+- ✅ Zero dependências de compilação (v0.1.6)
 - ✅ Integração com GitHub (branches, issues, PRs)
 - ✅ Code review automático
 - ✅ Validação SOLID e Atomic Design
 - ✅ CLI interativa com perguntas pós-geração
-- ✅ Instalação global via npm/pnpm (v0.1.3)
-- ✅ Setup automático de PATH pós-instalação (v0.1.3)
-- ✅ Flag --help e --version completas (v0.1.3)
-- ✅ Wrapper bash com resolução de symlinks (v0.1.3)
+- ✅ Instalação global via npm/pnpm (v0.1.3+)
+- ✅ Setup automático de PATH pós-instalação (v0.1.3+)
+- ✅ Flag --help e --version completas (v0.1.3+)
+- ✅ Wrapper bash com resolução de symlinks (v0.1.3+)
 - ✅ Documentação completa e wiki
 
 ### 🚧 Versão 0.2.0 (Próxima Release)
@@ -366,14 +379,17 @@ Você pode influenciar o roadmap:
 
 ### 📅 Cronograma de Releases
 
-| Versão | Data Prevista | Status |
-|--------|--------------|--------|
-| 0.1.0 | Nov 2024 | ✅ Released |
-| 0.1.1 | Dez 2024 | ✅ Released |
-| 0.1.3 | Jan 2025 | ✅ Released |
-| 0.2.0 | Mar 2025 | 🚧 Em Desenvolvimento |
-| 0.3.0 | Jun 2025 | 📋 Planejado |
-| 1.0.0 | Set 2025 | 📋 Planejado |
+| Versão | Data Prevista | Status | Destaques |
+|--------|--------------|--------|-----------|
+| 0.1.0 | Nov 2024 | ✅ Released | Lançamento inicial |
+| 0.1.1 | Dez 2024 | ✅ Released | Melhorias de estabilidade |
+| 0.1.3 | Jan 2025 | ✅ Released | CLI global + --help |
+| 0.1.4 | Jan 2025 | ✅ Released | README atualizado |
+| 0.1.5 | Jan 2025 | ✅ Released | Rust binary empacotado |
+| 0.1.6 | Jan 2025 | ✅ Released | Instalação sem build |
+| 0.2.0 | Mar 2025 | 🚧 Em Desenvolvimento | Novos providers AI |
+| 0.3.0 | Jun 2025 | 📋 Planejado | Integrações IDE |
+| 1.0.0 | Set 2025 | 📋 Planejado | Enterprise features |
 
 ### 🔔 Acompanhe o Desenvolvimento
 
