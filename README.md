@@ -10,7 +10,7 @@ Módulo de automação de desenvolvimento com geração de código, code review 
 - 🔄 **Reutilizável** - Pode ser usado em múltiplos projetos
 - 🚀 **Plug & Play** - Integração rápida em pipelines existentes
 
-## ✨ Novidades da Versão 0.1.6
+## ✨ Novidades da Versão 0.1.7
 
 **🚀 Melhorias Críticas de Instalação e Performance:**
 
@@ -387,6 +387,7 @@ Você pode influenciar o roadmap:
 | 0.1.4 | Jan 2025 | ✅ Released | README atualizado |
 | 0.1.5 | Jan 2025 | ✅ Released | Rust binary empacotado |
 | 0.1.6 | Jan 2025 | ✅ Released | Instalação sem build |
+| 0.1.7 | Jan 2025 | ✅ Released | README atualizado |
 | 0.2.0 | Mar 2025 | 🚧 Em Desenvolvimento | Novos providers AI |
 | 0.3.0 | Jun 2025 | 📋 Planejado | Integrações IDE |
 | 1.0.0 | Set 2025 | 📋 Planejado | Enterprise features |
