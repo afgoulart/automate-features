@@ -1,6 +1,6 @@
 {
   "name": "@arranjae/automate-features",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Development automation module with AI code generation, automated code review (SOLID, Atomic Design, Lint), and CI/CD pipeline integration",
   "main": "./dist/index.js",
   "module": "./dist/index.esm.js",
