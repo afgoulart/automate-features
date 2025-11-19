@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+# automate-features - CLI wrapper for @arranjae/automate-features
+# This script provides a convenient command-line interface for the automation tool
+
+set -e
+
+# Get the real path of this script (resolves symlinks)
+SCRIPT_PATH="${BASH_SOURCE[0]}"
+while [ -L "$SCRIPT_PATH" ]; do
+  SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
+  SCRIPT_PATH="$(readlink "$SCRIPT_PATH")"
+  [[ $SCRIPT_PATH != /* ]] && SCRIPT_PATH="$SCRIPT_DIR/$SCRIPT_PATH"
+done
+
+# Get the directory where the real script is located
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
+
+# Check if we're running from a global install or local
+if [ -f "$SCRIPT_DIR/automate-features.js" ]; then
+  # Running from package (local or global install)
+  NODE_SCRIPT="$SCRIPT_DIR/automate-features.js"
+elif [ -f "$SCRIPT_DIR/../dist/index.js" ]; then
+  # Running from development/source
+  NODE_SCRIPT="$SCRIPT_DIR/automate-features.js"
+else
+  echo "❌ Error: Could not find automate-features.js"
+  echo "   Searched in: $SCRIPT_DIR"
+  exit 1
+fi
+
+# Check if node is available
+if ! command -v node &> /dev/null; then
+  echo "❌ Error: Node.js is not installed"
+  echo "   Please install Node.js from https://nodejs.org/"
+  exit 1
+fi
+
+# Execute the Node.js script with all arguments
+exec node "$NODE_SCRIPT" "$@"

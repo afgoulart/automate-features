@@ -61,6 +61,7 @@ export class Pipeline {
     }
 
     // useCli: prioriza o valor do config, depois a env var
+    // Default: false (use API) unless explicitly set to true
     // Se config.useCli for explicitamente false, não usa env var
     const useCli =
       config.useCli !== undefined
@@ -78,7 +79,7 @@ export class Pipeline {
       console.log('[Pipeline] 🔧 CLI mode ENABLED');
       console.log(`[Pipeline] sourceDir: ${sourceDir}`);
     } else {
-      console.log('[Pipeline] 🌐 HTTP API mode (CLI disabled)');
+      console.log('[Pipeline] 🌐 API mode (default - using Claude Code API directly)');
     }
 
     this.config = {

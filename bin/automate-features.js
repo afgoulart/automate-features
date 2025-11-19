@@ -175,6 +175,7 @@ async function main() {
   console.log(`🚀 Iniciando processo de automação...\n`);
 
   // Check if CLI mode should be used
+  // Default: false (use API) unless explicitly set to 'true' or '1'
   console.log(`🔍 [DEBUG] process.env.USE_CLI: "${process.env.USE_CLI}"`);
   const useCli = process.env.USE_CLI === 'true' || process.env.USE_CLI === '1';
   console.log(`🔍 [DEBUG] useCli calculado: ${useCli}`);
@@ -209,7 +210,7 @@ async function main() {
       console.log(`📁 Source directory: ${sourceDirectory}`);
     }
   } else {
-    console.log('🌐 HTTP API mode (default)');
+    console.log('🌐 API mode (default - using Claude Code API directly)');
   }
 
   // Debug: log antes de criar o Pipeline
