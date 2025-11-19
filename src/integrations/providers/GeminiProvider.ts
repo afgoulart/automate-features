@@ -10,11 +10,11 @@ export class GeminiProvider implements AIProvider {
   private apiUrl: string;
   private model: string;
 
-  constructor(apiKey: string, model: string = 'gemini-pro') {
+  constructor(apiKey: string, model: string = 'gemini-2.0-flash') {
     this.apiKey = apiKey;
     this.model = model;
     // Google Gemini API endpoint
-    this.apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent`;
+    this.apiUrl = `https://generativelanguage.googleapis.com/v1/models/${this.model}:generateContent`;
   }
 
   /**

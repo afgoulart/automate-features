@@ -102,7 +102,7 @@ PROMPT_AI_TYPE=CLAUDE_CODE        # AI provider (CLAUDE_CODE, CURSOR, or GEMINI)
 # Mode Configuration
 USE_CLI=false                     # Use API mode (default: false)
 CLAUDE_MODEL=sonnet              # Claude model (opus, sonnet, haiku)
-GEMINI_MODEL=gemini-pro          # Gemini model (default: gemini-pro)
+GEMINI_MODEL=gemini-2.0-flash    # Gemini model (default: gemini-2.0-flash)
 
 # Optional
 GITHUB_TOKEN=ghp_xxx             # For PR/Issue creation
@@ -122,7 +122,7 @@ PROMPT_AI_KEY=sua_claude_api_key_aqui
 # Ou Google Gemini (API pública e gratuita*)
 # PROMPT_AI_TYPE=GEMINI
 # PROMPT_AI_KEY=sua_gemini_api_key_aqui
-# GEMINI_MODEL=gemini-pro  # Opcional, padrão: gemini-pro
+# GEMINI_MODEL=gemini-2.0-flash  # Opcional, padrão: gemini-2.0-flash
 
 # Ou Cursor (pode não ter API pública)
 # PROMPT_AI_TYPE=CURSOR
