@@ -95,12 +95,14 @@ USE_CLI=true automate-features --source=. feature.md
 ```bash
 # API Configuration
 ANTHROPIC_API_KEY=sk-xxx          # Claude API key
+GOOGLE_API_KEY=your-api-key       # Gemini API key
 PROMPT_AI_KEY=sk-xxx              # Universal AI provider key
-PROMPT_AI_TYPE=CLAUDE_CODE        # AI provider (CLAUDE_CODE or CURSOR)
+PROMPT_AI_TYPE=CLAUDE_CODE        # AI provider (CLAUDE_CODE, CURSOR, or GEMINI)
 
 # Mode Configuration
 USE_CLI=false                     # Use API mode (default: false)
 CLAUDE_MODEL=sonnet              # Claude model (opus, sonnet, haiku)
+GEMINI_MODEL=gemini-pro          # Gemini model (default: gemini-pro)
 
 # Optional
 GITHUB_TOKEN=ghp_xxx             # For PR/Issue creation
@@ -116,6 +118,11 @@ SOURCE=/path/to/project          # Source directory for context
 # ⭐ Recomendado: Use Claude Code (API pública e funcional)
 PROMPT_AI_TYPE=CLAUDE_CODE
 PROMPT_AI_KEY=sua_claude_api_key_aqui
+
+# Ou Google Gemini (API pública e gratuita*)
+# PROMPT_AI_TYPE=GEMINI
+# PROMPT_AI_KEY=sua_gemini_api_key_aqui
+# GEMINI_MODEL=gemini-pro  # Opcional, padrão: gemini-pro
 
 # Ou Cursor (pode não ter API pública)
 # PROMPT_AI_TYPE=CURSOR
@@ -281,7 +288,7 @@ Leia o [CONTRIBUTING.md](./CONTRIBUTING.md) completo para mais detalhes.
 
 **Novos Providers:**
 - [ ] Suporte para GPT-4 (OpenAI)
-- [ ] Suporte para Gemini (Google)
+- [x] Suporte para Gemini (Google) - Em desenvolvimento
 - [ ] Suporte para Llama 3 (local via Ollama)
 
 **Melhorias de Performance:**

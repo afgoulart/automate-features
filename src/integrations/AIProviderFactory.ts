@@ -1,6 +1,7 @@
 import { AIProvider, AIProviderType } from './AIProvider';
 import { CursorProvider } from './providers/CursorProvider';
 import { ClaudeCodeProvider } from './providers/ClaudeCodeProvider';
+import { GeminiProvider } from './providers/GeminiProvider';
 import { CursorCliProvider } from './providers/CursorCliProvider';
 import { ClaudeCodeCliProvider } from './providers/ClaudeCodeCliProvider';
 
@@ -51,6 +52,11 @@ export class AIProviderFactory {
       case 'CLAUDE_CODE':
         return new ClaudeCodeProvider(apiKey, apiUrl);
 
+      case 'GEMINI':
+        // Get Gemini model from environment or use default
+        const geminiModel = process.env.GEMINI_MODEL || 'gemini-pro';
+        return new GeminiProvider(apiKey, geminiModel);
+
       default:
         throw new Error(`Unsupported AI provider type: ${type}`);
     }
@@ -64,11 +70,17 @@ export class AIProviderFactory {
 
     // PROMPT_AI_KEY é a variável única que funciona para qualquer tipo de AI
     // Para Claude Code, também aceita ANTHROPIC_API_KEY (padrão da Anthropic)
+    // Para Gemini, também aceita GOOGLE_API_KEY (padrão do Google)
     let apiKey = process.env.PROMPT_AI_KEY || process.env.CURSOR_API_TOKEN || '';
 
     // Se for CLAUDE_CODE e não tiver PROMPT_AI_KEY, tenta ANTHROPIC_API_KEY
     if (!apiKey && providerType === 'CLAUDE_CODE') {
       apiKey = process.env.ANTHROPIC_API_KEY || '';
+    }
+
+    // Se for GEMINI e não tiver PROMPT_AI_KEY, tenta GOOGLE_API_KEY
+    if (!apiKey && providerType === 'GEMINI') {
+      apiKey = process.env.GOOGLE_API_KEY || '';
     }
 
     if (!apiKey) {
@@ -91,6 +103,6 @@ export class AIProviderFactory {
    * Get available provider types
    */
   static getAvailableTypes(): AIProviderType[] {
-    return ['CURSOR', 'CLAUDE_CODE'];
+    return ['CURSOR', 'CLAUDE_CODE', 'GEMINI'];
   }
 }

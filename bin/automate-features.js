@@ -42,7 +42,7 @@ function showHelp() {
                           Env: PROMPT_AI_KEY or ANTHROPIC_API_KEY
 
    --prompt-type=TYPE      AI provider type (default: CLAUDE_CODE)
-                          Options: CLAUDE_CODE, CURSOR
+                          Options: CLAUDE_CODE, CURSOR, GEMINI
                           Env: PROMPT_AI_TYPE
 
    --prompt-api-url=URL    Custom API URL (optional)
@@ -62,8 +62,10 @@ function showHelp() {
                           Options: opus, sonnet, haiku
 
    ANTHROPIC_API_KEY      Claude API key (alternative to PROMPT_AI_KEY)
+   GOOGLE_API_KEY         Gemini API key (alternative to PROMPT_AI_KEY)
+   GEMINI_MODEL           Gemini model (default: gemini-pro)
    PROMPT_AI_KEY          Universal AI provider key
-   PROMPT_AI_TYPE         AI provider type (CLAUDE_CODE or CURSOR)
+   PROMPT_AI_TYPE         AI provider type (CLAUDE_CODE, CURSOR, or GEMINI)
    GITHUB_TOKEN           GitHub token for PR/Issue creation
 
 📚 EXAMPLES:
@@ -83,6 +85,14 @@ function showHelp() {
    export ANTHROPIC_API_KEY=sk-xxx
    export PROMPT_AI_TYPE=CLAUDE_CODE
    automate-features feature.md
+
+   # Using Gemini provider
+   export GOOGLE_API_KEY=your-api-key
+   export PROMPT_AI_TYPE=GEMINI
+   automate-features feature.md
+
+   # Using Gemini with custom model
+   GEMINI_MODEL=gemini-pro-vision PROMPT_AI_TYPE=GEMINI automate-features feature.md
 
 📖 DOCUMENTATION:
    https://github.com/arranjae/automate-features
@@ -206,12 +216,20 @@ async function main() {
     if (!apiKey && aiProviderType === 'CLAUDE_CODE') {
       apiKey = process.env.ANTHROPIC_API_KEY;
     }
+
+    // Se for GEMINI, também tenta GOOGLE_API_KEY
+    if (!apiKey && aiProviderType === 'GEMINI') {
+      apiKey = process.env.GOOGLE_API_KEY;
+    }
   }
 
   if (!apiKey) {
-    const envVarName = aiProviderType === 'CLAUDE_CODE'
-      ? 'ANTHROPIC_API_KEY ou PROMPT_AI_KEY'
-      : 'PROMPT_AI_KEY';
+    let envVarName = 'PROMPT_AI_KEY';
+    if (aiProviderType === 'CLAUDE_CODE') {
+      envVarName = 'ANTHROPIC_API_KEY ou PROMPT_AI_KEY';
+    } else if (aiProviderType === 'GEMINI') {
+      envVarName = 'GOOGLE_API_KEY ou PROMPT_AI_KEY';
+    }
     console.error(`❌ Erro: --propt-key é obrigatório ou defina ${envVarName} no .env`);
     console.error('   Uso: npm run automate-features -- --propt-key=KEY --prompt-type=CLAUDE_CODE --source=DIR arquivo.md');
     console.error(`   Ou defina ${envVarName} no arquivo .env`);

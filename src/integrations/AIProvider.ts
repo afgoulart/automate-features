@@ -28,4 +28,4 @@ export interface GeneratorConfig {
 /**
  * Supported AI provider types
  */
-export type AIProviderType = 'CURSOR' | 'CLAUDE_CODE';
+export type AIProviderType = 'CURSOR' | 'CLAUDE_CODE' | 'GEMINI';
