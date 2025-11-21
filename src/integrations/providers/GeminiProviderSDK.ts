@@ -17,12 +17,12 @@ import { AIProvider } from '../AIProvider';
  * Google Gemini API Provider using official SDK
  */
 export class GeminiProviderSDK implements AIProvider {
-  private apiKey: string;
+  private _apiKey: string;
   private model: string;
   // private ai: GoogleGenAI;
 
   constructor(apiKey: string, model: string = 'gemini-2.0-flash') {
-    this.apiKey = apiKey;
+    this._apiKey = apiKey;
     this.model = model;
 
     // Initialize Google GenAI client
@@ -33,7 +33,7 @@ export class GeminiProviderSDK implements AIProvider {
   /**
    * Generate code using Gemini SDK
    */
-  async generateCode(prompt: string): Promise<string> {
+  async generateCode(_prompt: string): Promise<string> {
     console.log(`[GeminiProviderSDK] Generating code with model: ${this.model}`);
 
     try {

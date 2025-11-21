@@ -147,12 +147,18 @@ export class Pipeline {
         this.config.repoOwner &&
         this.config.repoName
       ) {
-        const branchName = options.branchName || this.generateBranchName(options.prompt);
-        await this.branchGenerator.create(branchName, {
-          owner: this.config.repoOwner,
-          repo: this.config.repoName,
-        });
-        result.branchName = branchName;
+        try {
+          const branchName = options.branchName || this.generateBranchName(options.prompt);
+          await this.branchGenerator.create(branchName, {
+            owner: this.config.repoOwner,
+            repo: this.config.repoName,
+          });
+          result.branchName = branchName;
+        } catch (error) {
+          console.warn(
+            `⚠️  GitHub branch creation failed (optional feature): ${error instanceof Error ? error.message : 'Unknown error'}`
+          );
+        }
       }
 
       // Create issue if requested
@@ -162,37 +168,53 @@ export class Pipeline {
         this.config.repoOwner &&
         this.config.repoName
       ) {
-        const issue = await this.taskCreator.create(
-          {
-            title: this.extractTitle(options.prompt),
-            description: options.prompt,
-          },
-          {
-            owner: this.config.repoOwner,
-            repo: this.config.repoName,
-          }
-        );
-        result.issueNumber = issue.number;
+        try {
+          const issue = await this.taskCreator.create(
+            {
+              title: this.extractTitle(options.prompt),
+              description: options.prompt,
+            },
+            {
+              owner: this.config.repoOwner,
+              repo: this.config.repoName,
+            }
+          );
+          result.issueNumber = issue.number;
+        } catch (error) {
+          console.warn(
+            `⚠️  GitHub issue creation failed (optional feature): ${error instanceof Error ? error.message : 'Unknown error'}`
+          );
+        }
       }
 
       // Create PR if requested
       if (options.createPR && this.prGenerator && this.config.repoOwner && this.config.repoName) {
-        const pr = await this.prGenerator.create(
-          {
-            title: this.extractTitle(options.prompt),
-            body: this.generatePRDescription(options.prompt, generatedCode.code),
-            branch: result.branchName || 'main',
-          },
-          {
-            owner: this.config.repoOwner,
-            repo: this.config.repoName,
-          }
-        );
-        result.prNumber = pr.number;
+        try {
+          const pr = await this.prGenerator.create(
+            {
+              title: this.extractTitle(options.prompt),
+              body: this.generatePRDescription(options.prompt, generatedCode.code),
+              branch: result.branchName || 'main',
+            },
+            {
+              owner: this.config.repoOwner,
+              repo: this.config.repoName,
+            }
+          );
+          result.prNumber = pr.number;
 
-        // Run code review if requested
-        if (options.runCodeReview) {
-          result.review = await this.review(pr.number);
+          // Run code review if requested
+          if (options.runCodeReview) {
+            result.review = await this.review(pr.number);
+          }
+        } catch (error) {
+          console.warn(
+            `⚠️  GitHub PR creation failed (optional feature): ${error instanceof Error ? error.message : 'Unknown error'}`
+          );
+          // Still run code review on generated code if requested
+          if (options.runCodeReview) {
+            result.review = await this.codeReviewer.review(generatedCode.code);
+          }
         }
       } else if (options.runCodeReview) {
         // Review generated code directly

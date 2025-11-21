@@ -58,7 +58,13 @@ export class ClaudeCodeProvider implements AIProvider {
       throw new Error('Invalid response from Claude Code API');
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        throw new Error(`Claude Code API error: ${error.message}`);
+        const errorDetails = error.response?.data
+          ? JSON.stringify(error.response.data)
+          : error.message;
+        const statusCode = error.response?.status || 'unknown';
+        throw new Error(
+          `Claude Code API error (${statusCode}): ${errorDetails}`
+        );
       }
       throw error;
     }

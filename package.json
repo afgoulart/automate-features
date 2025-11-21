@@ -41,7 +41,7 @@
     "clean": "rm -rf dist lib",
     "clean:rust": "cd rust && cargo clean",
     "dev": "npm run build:watch",
-    "automate-features": "node bin/automate-features.js",
+    "automate-features:dev": "node bin/automate-features.js",
     "example": "node examples/basic-usage.js",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -49,6 +49,7 @@
     "test:api": "ts-node test/api-mode-test.ts",
     "test:parser": "ts-node test/api-mode-simple-test.ts",
     "test:gemini": "ts-node test/gemini-test.ts",
+    "test:template": "ts-node test/template-parser-test.ts",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "format": "prettier --write \"src/**/*.ts\"",
@@ -106,13 +107,15 @@
   },
   "dependencies": {
     "axios": "^1.6.0",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "@release-it/conventional-changelog": "^10.0.1",
     "@rollup/plugin-node-resolve": "^15.2.0",
     "@rollup/plugin-typescript": "^11.1.0",
     "@types/node": "^20.10.0",
+    "@types/xml2js": "^0.4.14",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
     "eslint": "^8.54.0",

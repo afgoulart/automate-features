@@ -2,6 +2,7 @@ use napi_derive::napi;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use tokio::process::Command as AsyncCommand;
+use tokio::io::{AsyncBufReadExt, BufReader};
 use ignore::WalkBuilder;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -175,31 +176,102 @@ async fn execute_claude_cli(
         .arg("--system-prompt")
         .arg("You are an expert software developer. Generate complete, production-ready code following best practices. Return ONLY the code implementation without asking for permissions or confirmations. Generate all necessary files and code directly.")
         .arg(full_prompt)
-        .env("ANTHROPIC_API_KEY", api_key);
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped());
 
-    let output = command
-        .output()
-        .await
+    // Don't set ANTHROPIC_API_KEY when using CLI mode
+    // Claude CLI should use the local authenticated session
+    eprintln!("[Rust] Using local Claude CLI authentication (not setting API key env var)");
+    eprintln!("[Rust] ⏳ Executing Claude CLI with real-time output...");
+    eprintln!("[Rust] 💡 Streaming Claude output:");
+    eprintln!("─────────────────────────────────────────────────────");
+
+    let mut child = command
+        .spawn()
         .map_err(|e| {
-            napi::Error::from_reason(format!("Failed to execute claude CLI: {}", e))
+            napi::Error::from_reason(format!("Failed to spawn claude CLI: {}", e))
         })?;
 
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
+    // Get stdout and stderr
+    let stdout = child.stdout.take().ok_or_else(|| {
+        napi::Error::from_reason("Failed to capture stdout".to_string())
+    })?;
+    let stderr = child.stderr.take().ok_or_else(|| {
+        napi::Error::from_reason("Failed to capture stderr".to_string())
+    })?;
+
+    // Create readers
+    let stdout_reader = BufReader::new(stdout);
+    let stderr_reader = BufReader::new(stderr);
+
+    let mut stdout_lines = stdout_reader.lines();
+    let mut stderr_lines = stderr_reader.lines();
+
+    // Accumulate output
+    let mut output_buffer = String::new();
+    let mut error_buffer = String::new();
+
+    // Read stdout and stderr concurrently
+    loop {
+        tokio::select! {
+            result = stdout_lines.next_line() => {
+                match result {
+                    Ok(Some(line)) => {
+                        eprintln!("{}", line);  // Print to stderr in real-time
+                        output_buffer.push_str(&line);
+                        output_buffer.push('\n');
+                    }
+                    Ok(None) => break,  // EOF
+                    Err(e) => {
+                        eprintln!("[Rust] Error reading stdout: {}", e);
+                        break;
+                    }
+                }
+            }
+            result = stderr_lines.next_line() => {
+                match result {
+                    Ok(Some(line)) => {
+                        eprintln!("[stderr] {}", line);  // Print stderr with prefix
+                        error_buffer.push_str(&line);
+                        error_buffer.push('\n');
+                    }
+                    Ok(None) => {},  // stderr EOF, continue reading stdout
+                    Err(e) => {
+                        eprintln!("[Rust] Error reading stderr: {}", e);
+                    }
+                }
+            }
+        }
+    }
+
+    eprintln!("─────────────────────────────────────────────────────");
+
+    // Wait for process to complete
+    let status = child.wait().await.map_err(|e| {
+        napi::Error::from_reason(format!("Failed to wait for claude CLI: {}", e))
+    })?;
+
+    if !status.success() {
+        let exit_code = status.code().unwrap_or(-1);
+        eprintln!("[Rust] Claude CLI failed with exit code: {}", exit_code);
+
+        let error_msg = if !error_buffer.is_empty() {
+            error_buffer
+        } else if !output_buffer.is_empty() {
+            output_buffer
+        } else {
+            format!("Command failed with exit code {}", exit_code)
+        };
+
         return Err(napi::Error::from_reason(format!(
             "Claude CLI failed: {}",
-            stderr
+            error_msg
         )));
     }
 
-    let stdout = String::from_utf8(output.stdout)
-        .map_err(|e| {
-            napi::Error::from_reason(format!("Invalid UTF-8 in output: {}", e))
-        })?;
+    eprintln!("[Rust] ✓ Claude CLI execution completed successfully");
 
-    eprintln!("[Rust] Successfully received response from Claude CLI");
-
-    Ok(stdout)
+    Ok(output_buffer)
 }
 
 /// Generate code using CLI (Cursor or Claude Code)

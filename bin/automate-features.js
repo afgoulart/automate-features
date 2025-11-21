@@ -9,20 +9,52 @@
  */
 
 // Carregar variáveis de ambiente do .env se disponível
-try {
-  require('dotenv').config();
-} catch (e) {
-  // dotenv não instalado, continuar sem ele
-  // Variáveis de ambiente podem ser passadas diretamente
+// Tenta carregar .env de múltiplos locais possíveis
+const path = require('path');
+const fs = require('fs');
+
+const possibleEnvPaths = [
+  path.resolve(process.cwd(), '.env'),           // Diretório de trabalho atual
+  path.resolve(__dirname, '..', '.env'),         // Diretório do projeto (onde está package.json)
+  path.resolve('/Users/msc/Projects/Optmized-Process', '.env')  // Path absoluto do projeto
+];
+
+let dotenvPath = null;
+for (const envPath of possibleEnvPaths) {
+  if (fs.existsSync(envPath)) {
+    dotenvPath = envPath;
+    break;
+  }
+}
+
+if (dotenvPath) {
+  try {
+    // Parse .env file manually para ter controle total
+    const dotenv = require('dotenv');
+    const envFileContent = fs.readFileSync(dotenvPath, 'utf-8');
+    const parsed = dotenv.parse(envFileContent);
+
+    // Sobrescrever process.env com valores do .env (força override)
+    Object.keys(parsed).forEach(key => {
+      process.env[key] = parsed[key].trim();
+    });
+
+    console.log(`✓ [DOTENV] Loaded from: ${dotenvPath} (forced override)`);
+    console.log(`   Loaded keys: ${Object.keys(parsed).join(', ')}`);
+  } catch (e) {
+    console.log(`⚠️  [DOTENV] Error loading .env: ${e.message}`);
+  }
+} else {
+  console.log(`⚠️  [DOTENV] No .env file found in: ${possibleEnvPaths.join(', ')}`);
 }
 
 // Debug: log variáveis de ambiente importantes
 console.log(`🔍 [DEBUG inicial] process.env.USE_CLI: "${process.env.USE_CLI}"`);
 console.log(`🔍 [DEBUG inicial] process.env.PROMPT_AI_TYPE: "${process.env.PROMPT_AI_TYPE}"`);
+console.log(`🔍 [DEBUG inicial] process.env.PROMPT_KEY: "${process.env.PROMPT_KEY ? '***' + process.env.PROMPT_KEY.slice(-4) : 'undefined'}"`);
+console.log(`🔍 [DEBUG inicial] process.env.GEMINI_MODEL: "${process.env.GEMINI_MODEL}"`);
 
 const { Pipeline } = require('../dist/index.js');
-const fs = require('fs');
-const path = require('path');
 
 function showHelp() {
   console.log(`
@@ -51,6 +83,9 @@ function showHelp() {
    --source=DIR           Source directory for context (optional)
                           Env: SOURCE
 
+   --cli-mode, --cli      Enable CLI mode (use local AI CLI instead of API)
+                          Takes priority over USE_CLI env var
+
    -h, --help             Show this help message
    -v, --version          Show version number
 
@@ -78,7 +113,10 @@ function showHelp() {
    # Using Claude Code API with custom model
    CLAUDE_MODEL=opus automate-features feature.md
 
-   # Using CLI mode with source context
+   # Using CLI mode with source context (new --cli-mode flag)
+   automate-features --cli-mode --source=. feature.md
+
+   # Using CLI mode with source context (legacy USE_CLI env var)
    USE_CLI=true automate-features --source=. feature.md
 
    # With environment variables
@@ -123,6 +161,7 @@ function parseArgs() {
     promptType: process.env.PROMPT_TYPE || null,  // --prompt-type
     source: process.env.SOURCE || null,
     definitionFile: process.env.DEFINITION_FILE || null,
+    cliMode: null, // --cli-mode flag
   };
 
   for (const arg of args) {
@@ -136,6 +175,9 @@ function parseArgs() {
       console.log(`🔍 [DEBUG parseArgs] --prompt-type detectado: "${config.promptType}"`);
     } else if (arg.startsWith('--source=')) {
       config.source = arg.split('=')[1];
+    } else if (arg === '--cli-mode' || arg === '--cli') {
+      config.cliMode = true;
+      console.log(`🔍 [DEBUG parseArgs] --cli-mode detectado: true`);
     } else if (!arg.startsWith('--')) {
       // Assume it's the markdown file (any .md file)
       config.definitionFile = arg;
@@ -274,9 +316,19 @@ async function main() {
   console.log(`🚀 Iniciando processo de automação...\n`);
 
   // Check if CLI mode should be used
-  // Default: false (use API) unless explicitly set to 'true' or '1'
+  // Priority: --cli-mode flag > USE_CLI env var > default (false)
   console.log(`🔍 [DEBUG] process.env.USE_CLI: "${process.env.USE_CLI}"`);
-  const useCli = process.env.USE_CLI === 'true' || process.env.USE_CLI === '1';
+  console.log(`🔍 [DEBUG] config.cliMode: ${config.cliMode}`);
+
+  let useCli = false;
+  if (config.cliMode === true) {
+    useCli = true;  // --cli-mode flag takes priority
+    process.env.USE_CLI = 'true';  // Set env var when --cli-mode is passed
+    console.log(`✓ [CLI-MODE] process.env.USE_CLI definido como 'true' via flag --cli-mode`);
+  } else if (process.env.USE_CLI === 'true' || process.env.USE_CLI === '1') {
+    useCli = true;  // Fallback to USE_CLI env var (backward compatibility)
+  }
+
   console.log(`🔍 [DEBUG] useCli calculado: ${useCli}`);
 
   // Source directory: use provided source, or project root (not the feature file directory)

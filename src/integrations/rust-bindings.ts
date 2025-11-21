@@ -110,7 +110,7 @@ export async function generateCodeCli(request: GenerateCodeRequest): Promise<Gen
   const sanitizedRequest: any = {
     prompt: request.prompt || '',
     providerType: request.providerType || request.provider_type || '',
-    apiKey: request.apiKey || request.api_key || '',
+    // apiKey: request.apiKey || request.api_key || '',
     sourceDir: request.sourceDir || request.source_dir,
     language: request.language,
     framework: request.framework,
